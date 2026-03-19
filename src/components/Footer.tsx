@@ -8,7 +8,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <h3 className="text-2xl font-bold tracking-widest uppercase mb-4">
-              Insight<span className="text-accent">.</span>
+              Insight<span className="text-sage">.</span>
             </h3>
             <p className="text-muted text-sm leading-relaxed">
               A welcoming, female-led tattoo studio in Northland. Est. 2016.
@@ -80,7 +80,7 @@ export default function Footer() {
                   href="https://facebook.com/insighttattoo.co.nz/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted hover:text-accent transition-colors"
+                  className="text-muted hover:text-sage transition-colors"
                 >
                   Facebook
                 </a>
@@ -88,7 +88,7 @@ export default function Footer() {
                   href="https://instagram.com/insight_tattoo_nz"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted hover:text-accent transition-colors"
+                  className="text-muted hover:text-sage transition-colors"
                 >
                   Instagram
                 </a>

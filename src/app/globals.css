@@ -3,11 +3,14 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --accent: #c8a97e;
+  --accent: #c4a882;
   --accent-hover: #d4ba94;
-  --muted: #888888;
-  --card-bg: #141414;
-  --border: #222222;
+  --sage: #7a9a8a;
+  --sage-dark: #5a7a6a;
+  --rose: #c4a882;
+  --muted: #999999;
+  --card-bg: #111311;
+  --border: #1e2420;
 }
 
 @theme inline {
@@ -15,6 +18,9 @@
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-sage: var(--sage);
+  --color-sage-dark: var(--sage-dark);
+  --color-rose: var(--rose);
   --color-muted: var(--muted);
   --color-card-bg: var(--card-bg);
   --color-border: var(--border);
