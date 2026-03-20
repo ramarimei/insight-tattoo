@@ -47,10 +47,13 @@ export default function Home() {
           <p className="text-sage text-sm tracking-[0.3em] uppercase mb-4">
             Est. 2016 &mdash; Whangarei, New Zealand
           </p>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
-            <span className="text-accent italic">Insight</span>
-            <br />
-            <span className="text-sage tracking-widest">TATTOO</span>
+          <h1 className="mb-6">
+            <span className="block text-6xl md:text-8xl lg:text-9xl italic font-light tracking-wide text-sage" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+              Insight
+            </span>
+            <span className="block text-2xl md:text-3xl lg:text-4xl tracking-[0.4em] uppercase text-sage/70 font-light mt-1">
+              tattoo
+            </span>
           </h1>
           <p className="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             A welcoming, female-led tattoo studio where ideas are talked through,
@@ -137,7 +140,7 @@ export default function Home() {
       {/* Fantail Divider */}
       <section className="relative w-full overflow-hidden">
         <Image
-          src="/images/generated/divider-fantail.jpeg"
+          src="/images/generated/divider-fantail-clean.jpeg"
           alt="Decorative divider"
           width={2000}
           height={400}
@@ -248,7 +251,7 @@ export default function Home() {
       {/* Footer Wave Divider */}
       <section className="relative w-full overflow-hidden">
         <Image
-          src="/images/generated/footer-wave.jpeg"
+          src="/images/generated/footer-wave-clean.jpeg"
           alt="Decorative footer"
           width={2000}
           height={400}
