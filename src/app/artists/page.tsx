@@ -53,15 +53,14 @@ export default function ArtistsPage() {
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-8">
           Our Artists
         </h1>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-3xl mx-auto overflow-hidden">
           <Image
-            src="/images/artists-artwork.jpg"
-            alt="Renee, Fae, and Ash — illustrated by Renee"
-            width={600}
+            src="/images/team-artists.jpg"
+            alt="Fae, Ash, and Renee at Insight Tattoo Studio"
+            width={800}
             height={600}
             className="w-full h-auto mx-auto"
           />
-          <p className="text-muted text-sm mt-4 italic">Artwork by Renee</p>
         </div>
       </section>
 
