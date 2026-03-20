@@ -35,7 +35,7 @@ export default function Home() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/images/generated/hero-ocean-studio.jpeg"
+            src="/images/generated/hero-v2-clean.jpeg"
             alt="Insight Tattoo Studio"
             fill
             className="object-cover"
@@ -48,9 +48,9 @@ export default function Home() {
             Est. 2016 &mdash; Whangarei, New Zealand
           </p>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
-            INSIGHT
+            <span className="text-accent italic">Insight</span>
             <br />
-            <span className="text-accent">TATTOO</span>
+            <span className="text-sage tracking-widest">TATTOO</span>
           </h1>
           <p className="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             A welcoming, female-led tattoo studio where ideas are talked through,
