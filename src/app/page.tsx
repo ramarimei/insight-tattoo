@@ -5,19 +5,19 @@ const artists = [
   {
     name: "Renee",
     specialty: "Watercolour, NZ Native Birds, Floral",
-    image: "/images/team-artists.jpg",
+    image: "/images/generated/artist-renee.jpeg",
     href: "/artists#renee",
   },
   {
     name: "Ash",
     specialty: "Illustrative, Geometric, Hand Tattoos",
-    image: "/images/team-artists.jpg",
+    image: "/images/generated/artist-ash.jpeg",
     href: "/artists#ash",
   },
   {
     name: "Fae",
     specialty: "Flash Designs, Custom, Botanical",
-    image: "/images/team-artists.jpg",
+    image: "/images/generated/artist-fae.jpeg",
     href: "/artists#fae",
   },
 ];
