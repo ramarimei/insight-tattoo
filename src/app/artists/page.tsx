@@ -47,9 +47,15 @@ const artists = [
     contact: "fwolfepine@gmail.com",
     availability: "Mon, Thu, Sat. Flash and custom designs available.",
     gallery: [
-      "/images/gallery/renee/FullSizeRender-1-scaled-e1694856948483-875x1024.jpeg",
-      "/images/gallery/ash/IMG_7793.jpeg",
-      "/images/gallery/ash/IMG_7800.jpeg",
+      "/images/gallery/fae/IMG_7354.jpeg",
+      "/images/gallery/fae/IMG_7792.jpeg",
+      "/images/gallery/fae/IMG_20240624_114337-768x1024.jpeg",
+      "/images/gallery/fae/20240803_1516470_edit_234097105952297-1-768x1024.jpeg",
+      "/images/gallery/fae/20241003_154446_edit_45133722432174-818x1024.jpeg",
+      "/images/gallery/fae/IMG_20250322_140209_edit_1154720553962862-688x1024.jpeg",
+      "/images/gallery/fae/IMG_20250426_122006_1_edit_660654629506479-582x1024.jpeg",
+      "/images/gallery/fae/image3_edit_1545956445302634-1-768x1024.jpeg",
+      "/images/gallery/fae/20250106_131739-647x1024.jpeg",
     ],
   },
 ];
