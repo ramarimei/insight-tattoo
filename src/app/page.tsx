@@ -28,6 +28,21 @@ const galleryImages = [
   { src: "/images/generated/hero-feminine.jpeg", alt: "Studio feminine" },
 ];
 
+const testimonials = [
+  {
+    text: "Such a welcoming studio. Renee took the time to really understand what I wanted and the result was beyond anything I imagined. Can't wait to go back!",
+    name: "Sarah M.",
+  },
+  {
+    text: "Ash did an incredible geometric piece on my forearm. The detail is unreal. The whole experience was so relaxed and professional.",
+    name: "Jade T.",
+  },
+  {
+    text: "I was nervous getting my first tattoo but the team at Insight made me feel so comfortable. Fae's flash designs are beautiful — I ended up getting two!",
+    name: "Mia R.",
+  },
+];
+
 export default function Home() {
   return (
     <>
@@ -43,7 +58,7 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-black/50" />
         </div>
-        <div className="relative z-10 text-center px-6 max-w-4xl animate-fade-in">
+        <div className="relative z-10 text-center px-6 max-w-4xl">
           <p className="text-sage text-sm tracking-[0.3em] uppercase mb-4">
             Est. 2016 &mdash; Whangarei, New Zealand
           </p>
@@ -74,11 +89,34 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-foreground/30 rounded-full flex items-start justify-center pt-2">
-            <div className="w-1.5 h-1.5 bg-sage rounded-full" />
+      {/* Studio Hours — moved up per Renee's request */}
+      <section className="py-12 px-6 bg-card-bg border-b border-border">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
+              Mon – Wed
+            </h3>
+            <p className="text-foreground text-sm">9am – 3pm</p>
+          </div>
+          <div>
+            <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
+              Thu – Fri
+            </h3>
+            <p className="text-foreground text-sm">9am – 5pm</p>
+          </div>
+          <div>
+            <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
+              Saturday
+            </h3>
+            <p className="text-foreground text-sm">9am – 3pm</p>
+          </div>
+          <div>
+            <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
+              Sunday
+            </h3>
+            <p className="text-foreground text-sm">By Appointment</p>
           </div>
         </div>
       </section>
@@ -121,7 +159,7 @@ export default function Home() {
             </p>
             <Link
               href="/pricing"
-              className="text-accent text-sm tracking-wider uppercase hover:text-accent-hover transition-colors"
+              className="text-sage text-sm tracking-wider uppercase hover:text-sage-dark transition-colors"
             >
               View Pricing &rarr;
             </Link>
@@ -245,6 +283,35 @@ export default function Home() {
           >
             Book an Appointment
           </Link>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-sage text-sm tracking-[0.3em] uppercase mb-4">
+              What Our Clients Say
+            </p>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+              Testimonials
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, i) => (
+              <div
+                key={i}
+                className="bg-card-bg border border-border p-8"
+              >
+                <p className="text-muted text-sm leading-relaxed mb-6 italic">
+                  &ldquo;{testimonial.text}&rdquo;
+                </p>
+                <p className="text-sage text-sm font-medium">
+                  — {testimonial.name}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
