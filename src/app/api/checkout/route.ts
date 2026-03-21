@@ -11,27 +11,31 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card", "afterpay_clearpay"],
-    line_items: [
-      {
-        price_data: {
-          currency: "nzd",
-          product_data: {
-            name: productName,
+  try {
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data: {
+            currency: "nzd",
+            product_data: {
+              name: productName,
+            },
+            unit_amount: Math.round(price * 100),
           },
-          unit_amount: Math.round(price * 100),
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      mode: "payment",
+      success_url: `${request.nextUrl.origin}/shop?success=true`,
+      cancel_url: `${request.nextUrl.origin}/shop?cancelled=true`,
+      metadata: {
+        productId: productId || "",
       },
-    ],
-    mode: "payment",
-    success_url: `${request.nextUrl.origin}/shop?success=true`,
-    cancel_url: `${request.nextUrl.origin}/shop?cancelled=true`,
-    metadata: {
-      productId: productId || "",
-    },
-  });
+    });
 
-  return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.url });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Checkout failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
