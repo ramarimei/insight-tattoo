@@ -23,9 +23,12 @@ const artists = [
 ];
 
 const galleryImages = [
-  { src: "/images/generated/hero-storefront.jpeg", alt: "Insight Tattoo storefront" },
-  { src: "/images/generated/hero-studio-real.jpeg", alt: "Studio interior" },
-  { src: "/images/generated/hero-feminine.jpeg", alt: "Studio feminine" },
+  { src: "/images/gallery/renee/D7C1F904-B4CD-4E36-AB49-AD3C4491027F-scaled-e1712367925322.jpeg", alt: "Watercolour Kaka by Renee" },
+  { src: "/images/gallery/ash/IMG_6716-1024x859.jpeg", alt: "Tattoo work by Ash" },
+  { src: "/images/gallery/renee/Fantail-Heart-Tattoo.jpg", alt: "Fantail Heart Tattoo by Renee" },
+  { src: "/images/gallery/ash/IMG_6717-724x1024.jpeg", alt: "Tattoo work by Ash" },
+  { src: "/images/gallery/renee/7B21628B-5323-4D27-AE55-779624B9345F.jpeg", alt: "Tui Tattoo by Renee" },
+  { src: "/images/gallery/ash/IMG_6718-518x1024.jpeg", alt: "Tattoo work by Ash" },
 ];
 
 const testimonials = [
@@ -240,11 +243,11 @@ export default function Home() {
               Recent Pieces
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {galleryImages.map((img, i) => (
               <div
                 key={i}
-                className="relative aspect-square overflow-hidden group"
+                className="relative aspect-[3/4] overflow-hidden group"
               >
                 <Image
                   src={img.src}

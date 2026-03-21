@@ -5,19 +5,19 @@ const products = [
   {
     name: "Tui Tattoo",
     price: 400,
-    image: "/images/generated/hero-ink.jpeg",
+    image: "/images/gallery/shop/IMG_8810-1-scaled.jpeg",
     description: "Beautiful NZ Tui bird design",
   },
   {
     name: "Medium Back Piece",
     price: 650,
-    image: "/images/generated/hero-studio.jpeg",
+    image: "/images/gallery/shop/IMG_20250322_140209_edit_1154720553962862.jpeg",
     description: "Medium size back tattoo design",
   },
   {
     name: "Wrist Floral",
     price: 280,
-    image: "/images/generated/bg-dark.jpeg",
+    image: "/images/gallery/shop/IMG_20230831_175239-scaled.jpeg",
     description: "Delicate floral wrist piece",
   },
 ];
