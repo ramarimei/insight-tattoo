@@ -112,9 +112,19 @@ function ShopContent() {
                 <button
                   onClick={() => handleBuy(product)}
                   disabled={loading === product.id}
-                  className="px-5 py-2 bg-sage text-background text-sm tracking-wider uppercase font-medium hover:bg-sage-dark transition-colors duration-300 disabled:opacity-50"
+                  className="px-5 py-2 bg-sage text-background text-sm tracking-wider uppercase font-medium hover:bg-sage-dark transition-colors duration-300 disabled:opacity-70 disabled:cursor-wait flex items-center gap-2"
                 >
-                  {loading === product.id ? "Loading..." : "Buy Now"}
+                  {loading === product.id ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    "Buy Now"
+                  )}
                 </button>
               </div>
             </div>
