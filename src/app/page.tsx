@@ -1,5 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+export const revalidate = 60; // Revalidate every 60 seconds so CMS changes show quickly
+
+async function getSiteAssets(): Promise<Record<string, string>> {
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const { data } = await supabase.from("site_assets").select("key, image_url");
+  const assets: Record<string, string> = {
+    hero_image: "/images/generated/hero-v2-clean.jpeg",
+    hero_logo: "/images/logo-hero-sage.png",
+    cta_background: "/images/generated/bg-ocean-botanical.jpeg",
+  };
+  if (data) {
+    for (const row of data) {
+      assets[row.key] = row.image_url;
+    }
+  }
+  return assets;
+}
 
 const artists = [
   {
@@ -46,14 +68,16 @@ const testimonials = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const assets = await getSiteAssets();
+
   return (
     <>
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/images/generated/hero-v2-clean.jpeg"
+            src={assets.hero_image}
             alt="Insight Tattoo Studio"
             fill
             className="object-cover"
@@ -67,7 +91,7 @@ export default function Home() {
           </p>
           <h1 className="mb-8">
             <Image
-              src="/images/logo-hero-sage.png"
+              src={assets.hero_logo}
               alt="Insight Tattoo Studio"
               width={800}
               height={280}
@@ -254,7 +278,7 @@ export default function Home() {
       <section className="relative py-32 px-6 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/images/generated/bg-ocean-botanical.jpeg"
+            src={assets.cta_background}
             alt="Background"
             fill
             className="object-cover"
