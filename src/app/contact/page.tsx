@@ -3,6 +3,40 @@
 import { useState } from "react";
 import Image from "next/image";
 
+async function compressImage(file: File, maxWidth = 1600, quality = 0.8): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement("img");
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement("canvas");
+      let { width, height } = img;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("Canvas not supported"));
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject(new Error("Compression failed"));
+          const compressed = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
+            type: "image/jpeg",
+          });
+          resolve(compressed);
+        },
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = url;
+  });
+}
+
 export default function ContactPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -10,9 +44,21 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
-    const newFiles = [...files, ...selectedFiles].slice(0, 5);
+    const toAdd = selectedFiles.slice(0, 5 - files.length);
+
+    // Compress each image before storing
+    const compressed: File[] = [];
+    for (const file of toAdd) {
+      try {
+        compressed.push(await compressImage(file));
+      } catch {
+        compressed.push(file); // fallback to original if compression fails
+      }
+    }
+
+    const newFiles = [...files, ...compressed].slice(0, 5);
     setFiles(newFiles);
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
     setPreviews(newPreviews);

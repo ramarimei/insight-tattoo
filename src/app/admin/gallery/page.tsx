@@ -17,11 +17,40 @@ interface GalleryImage {
   created_at: string;
 }
 
+async function compressImage(file: File, maxWidth = 1600, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement("img");
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement("canvas");
+      let { width, height } = img;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("Canvas not supported"));
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error("Compression failed"))),
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = url;
+  });
+}
+
 export default function GalleryAdminPage() {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string>("all");
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
 
   useEffect(() => {
     fetchArtists();
@@ -45,13 +74,25 @@ export default function GalleryAdminPage() {
     if (!e.target.files || selectedArtist === "all") return;
     setUploading(true);
 
-    for (const file of Array.from(e.target.files)) {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${selectedArtist}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const files = Array.from(e.target.files);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadProgress(`Compressing ${i + 1}/${files.length}...`);
+
+      // Compress image client-side before upload
+      let uploadData: Blob | File = file;
+      try {
+        uploadData = await compressImage(file);
+      } catch {
+        // If compression fails, upload original
+      }
+
+      setUploadProgress(`Uploading ${i + 1}/${files.length}...`);
+      const fileName = `${selectedArtist}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from("gallery")
-        .upload(fileName, file);
+        .upload(fileName, uploadData, { contentType: "image/jpeg" });
 
       if (!uploadError) {
         const { data: urlData } = supabase.storage
@@ -67,6 +108,7 @@ export default function GalleryAdminPage() {
     }
 
     setUploading(false);
+    setUploadProgress("");
     fetchImages();
     e.target.value = "";
   };
@@ -112,7 +154,7 @@ export default function GalleryAdminPage() {
 
         {selectedArtist !== "all" && (
           <label className="px-5 py-2 bg-sage text-background text-sm tracking-wider uppercase font-medium hover:bg-sage-dark transition-colors cursor-pointer">
-            {uploading ? "Uploading..." : "Upload Images"}
+            {uploading ? uploadProgress || "Uploading..." : "Upload Images"}
             <input
               type="file"
               className="hidden"

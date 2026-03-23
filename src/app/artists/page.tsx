@@ -4,7 +4,7 @@ const artists = [
   {
     id: "renee",
     name: "Renee",
-    avatar: "/images/generated/artist-renee.jpeg",
+    avatar: "/images/artist-renee.jpg",
     bio: "Studio owner and lead artist since 2016. Renee specialises in watercolour work, NZ native birds, floral designs, and contemporary Maori-inspired pieces. Large-scale work in preferred styles receives discounted hourly rates.",
     contact: "info@insighttattoo.co.nz",
     availability: "Books open — appointments available",
@@ -23,7 +23,7 @@ const artists = [
   {
     id: "ash",
     name: "Ash",
-    avatar: "/images/generated/artist-ash.jpeg",
+    avatar: "/images/artist-ash.jpg",
     bio: "Ash brings a bold illustrative style to the studio, specialising in geometric designs, hand tattoos, and detailed black work. Walk-ins welcome on Thursdays from 9am.",
     contact: "ashink.tattoos@icloud.com",
     availability: "Wed, Fri, Sat by appointment. Thu walk-ins from 9am.",
@@ -42,7 +42,7 @@ const artists = [
   {
     id: "fae",
     name: "Fae",
-    avatar: "/images/generated/artist-fae.jpeg",
+    avatar: "/images/artist-fae.jpg",
     bio: "Fae creates beautiful flash designs and custom pieces with a focus on botanical, geometric, and illustrative styles. Flash designs are regularly posted on the Insight Facebook page.",
     contact: "fwolfepine@gmail.com",
     availability: "Mon, Thu, Sat. Flash and custom designs available.",

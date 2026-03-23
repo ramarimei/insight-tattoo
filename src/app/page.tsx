@@ -5,19 +5,19 @@ const artists = [
   {
     name: "Renee",
     specialty: "Watercolour, NZ Native Birds, Floral",
-    image: "/images/generated/artist-renee.jpeg",
+    image: "/images/artist-renee.jpg",
     href: "/artists#renee",
   },
   {
     name: "Ash",
     specialty: "Illustrative, Geometric, Hand Tattoos",
-    image: "/images/generated/artist-ash.jpeg",
+    image: "/images/artist-ash.jpg",
     href: "/artists#ash",
   },
   {
     name: "Fae",
     specialty: "Flash Designs, Custom, Botanical",
-    image: "/images/generated/artist-fae.jpeg",
+    image: "/images/artist-fae.jpg",
     href: "/artists#fae",
   },
 ];
@@ -61,17 +61,19 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-black/50" />
         </div>
-        <div className="relative z-10 text-center px-6 max-w-4xl">
-          <p className="text-sage text-sm tracking-[0.3em] uppercase mb-4">
+        <div className="relative z-10 text-center px-6 max-w-5xl">
+          <p className="text-sage text-sm tracking-[0.3em] uppercase mb-6">
             Est. 2016 &mdash; Whangarei, New Zealand
           </p>
-          <h1 className="mb-6">
-            <span className="block text-6xl md:text-8xl lg:text-9xl italic font-light tracking-wide text-sage" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-              Insight
-            </span>
-            <span className="block text-2xl md:text-3xl lg:text-4xl tracking-[0.4em] uppercase text-sage/70 font-light mt-1">
-              tattoo
-            </span>
+          <h1 className="mb-8">
+            <Image
+              src="/images/logo-hero-sage.png"
+              alt="Insight Tattoo Studio"
+              width={800}
+              height={280}
+              className="mx-auto w-full max-w-2xl md:max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
+              priority
+            />
           </h1>
           <p className="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             A welcoming, female-led tattoo studio where ideas are talked through,
@@ -124,19 +126,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Logo Banner */}
-      <section className="relative py-8 overflow-hidden">
-        <div className="max-w-5xl mx-auto px-6">
-          <Image
-            src="/images/generated/logo-feminine.jpeg"
-            alt="Insight Tattoo"
-            width={1200}
-            height={500}
-            className="w-full h-auto"
-          />
-        </div>
-      </section>
-
       {/* About Section */}
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -169,8 +158,8 @@ export default function Home() {
           </div>
           <div className="relative aspect-[4/5] overflow-hidden">
             <Image
-              src="/images/team-group.jpg"
-              alt="The Insight Tattoo team"
+              src="/images/renee-studio-bw.jpg"
+              alt="Renee tattooing at Insight Tattoo Studio"
               fill
               className="object-cover"
             />
@@ -316,17 +305,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Footer Wave Divider */}
-      <section className="relative w-full overflow-hidden">
-        <Image
-          src="/images/generated/footer-wave-clean.jpeg"
-          alt="Decorative footer"
-          width={2000}
-          height={400}
-          className="w-full h-auto"
-        />
       </section>
 
       {/* Info Bar */}
