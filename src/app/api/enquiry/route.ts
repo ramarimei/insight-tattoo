@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { rateLimit } from "@/lib/rate-limit";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,7 +11,24 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 5 submissions per IP per hour
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = rateLimit(`enquiry:${ip}`, 5, 60 * 60 * 1000);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many submissions. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } }
+    );
+  }
+
   const formData = await request.formData();
+
+  // Honeypot check — if this hidden field has a value, it's a bot
+  const honeypot = formData.get("website") as string;
+  if (honeypot) {
+    // Silently accept but don't process — bots think it worked
+    return NextResponse.json({ success: true, enquiryId: "ok", imagesUploaded: 0 });
+  }
 
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;

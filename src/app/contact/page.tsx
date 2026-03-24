@@ -126,6 +126,7 @@ export default function ContactPage() {
     formData.append("email", (form.elements.namedItem("email") as HTMLInputElement).value);
     formData.append("artist_preference", (form.elements.namedItem("artist_preference") as HTMLSelectElement).value);
     formData.append("message", (form.elements.namedItem("message") as HTMLTextAreaElement).value);
+    formData.append("website", (form.elements.namedItem("website") as HTMLInputElement).value);
 
     for (const file of files) {
       formData.append("images", file);
@@ -270,6 +271,10 @@ export default function ContactPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Honeypot — hidden from humans, bots auto-fill it */}
+                <div className="absolute opacity-0 -z-10" aria-hidden="true">
+                  <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+                </div>
                 <div>
                   <label className="block text-sm tracking-wider uppercase text-muted mb-2">
                     Name
