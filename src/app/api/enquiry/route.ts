@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "Insight Tattoo <onboarding@resend.dev>",
-      to: "info@insighttattoo.co.nz",
+      to: "ramari.heperi@gmail.com",
       subject: `New Enquiry from ${name}`,
       text: `New tattoo enquiry received:\n\nName: ${name}\nEmail: ${email}\nArtist Preference: ${artistPreference || "No preference"}\n\nMessage:\n${message}${imageLinks}\n\n---\nView all enquiries: ${process.env.NEXT_PUBLIC_SITE_URL || "https://insight-tattoo.vercel.app"}/admin/enquiries`,
     });
