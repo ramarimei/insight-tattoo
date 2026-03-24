@@ -14,6 +14,7 @@ const adminLinks = [
   { href: "/admin/gallery", label: "Gallery" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/testimonials", label: "Testimonials" },
+  { href: "/admin/users", label: "Users" },
 ];
 
 export default function AdminLayout({
