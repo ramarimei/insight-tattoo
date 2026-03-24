@@ -126,7 +126,7 @@ export default function GalleryAdminPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Gallery</h1>
+      <h1 className="text-3xl font-bold mb-8">Recent Pieces</h1>
 
       {/* Controls */}
       <div className="flex items-center gap-4 mb-8">
