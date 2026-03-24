@@ -2,41 +2,38 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { supabase } from "@/lib/supabase";
 
-const products = [
-  {
-    id: "tui-tattoo",
-    name: "Tui Tattoo",
-    price: 400,
-    image: "/images/gallery/shop/IMG_8810-1-scaled.jpeg",
-    description: "Beautiful NZ Tui bird design",
-  },
-  {
-    id: "medium-back-piece",
-    name: "Medium Back Piece",
-    price: 650,
-    image: "/images/gallery/shop/IMG_20250322_140209_edit_1154720553962862.jpeg",
-    description: "Medium size back tattoo design",
-  },
-  {
-    id: "wrist-floral",
-    name: "Wrist Floral",
-    price: 280,
-    image: "/images/gallery/shop/IMG_20230831_175239-scaled.jpeg",
-    description: "Delicate floral wrist piece",
-  },
-];
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string | null;
+  description: string;
+}
 
 function ShopContent() {
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
   const cancelled = searchParams.get("cancelled");
   const [loading, setLoading] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const handleBuy = async (product: (typeof products)[0]) => {
+  useEffect(() => {
+    supabase
+      .from("products")
+      .select("*")
+      .eq("active", true)
+      .order("sort_order")
+      .then(({ data }) => {
+        if (data) setProducts(data);
+      });
+  }, []);
+
+  const handleBuy = async (product: Product) => {
     setLoading(product.id);
     try {
       const res = await fetch("/api/checkout", {
@@ -97,7 +94,7 @@ function ShopContent() {
             <div key={product.id} className="group">
               <div className="relative aspect-square overflow-hidden mb-4">
                 <Image
-                  src={product.image}
+                  src={product.image_url || "/images/placeholder.jpg"}
                   alt={product.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"

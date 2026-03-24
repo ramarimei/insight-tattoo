@@ -1,4 +1,10 @@
-export default function LocationPage() {
+import { getSiteContent } from "@/lib/site-data";
+
+export const revalidate = 60;
+
+export default async function LocationPage() {
+  const content = await getSiteContent();
+
   return (
     <div className="pt-24">
       {/* Header */}
@@ -36,8 +42,12 @@ export default function LocationPage() {
                 <h3 className="text-accent text-sm tracking-wider uppercase mb-2">
                   Address
                 </h3>
-                <p className="text-muted">428 Te Kamo Rd</p>
-                <p className="text-muted">Kamo, Whangarei</p>
+                <p className="text-muted">
+                  {content.contact_address_line1 || "428 Te Kamo Rd"}
+                </p>
+                <p className="text-muted">
+                  {content.contact_address_line2 || "Kamo, Whangarei"}
+                </p>
                 <p className="text-muted">New Zealand</p>
               </div>
 
@@ -48,19 +58,19 @@ export default function LocationPage() {
                 <div className="space-y-2 text-muted text-sm">
                   <div className="flex justify-between max-w-xs">
                     <span>Monday – Wednesday</span>
-                    <span>9am – 3pm</span>
+                    <span>{content.hours_mon_wed || "9am – 3pm"}</span>
                   </div>
                   <div className="flex justify-between max-w-xs">
                     <span>Thursday – Friday</span>
-                    <span>9am – 5pm</span>
+                    <span>{content.hours_thu_fri || "9am – 5pm"}</span>
                   </div>
                   <div className="flex justify-between max-w-xs">
                     <span>Saturday</span>
-                    <span>9am – 3pm</span>
+                    <span>{content.hours_saturday || "9am – 3pm"}</span>
                   </div>
                   <div className="flex justify-between max-w-xs">
                     <span>Sunday</span>
-                    <span>By Appointment</span>
+                    <span>{content.hours_sunday || "By Appointment"}</span>
                   </div>
                 </div>
               </div>
@@ -82,18 +92,18 @@ export default function LocationPage() {
                 </h3>
                 <p className="text-muted text-sm">
                   <a
-                    href="tel:099719067"
+                    href={`tel:${(content.contact_phone || "09 971 9067").replace(/\s/g, "")}`}
                     className="hover:text-foreground transition-colors"
                   >
-                    09 971 9067
+                    {content.contact_phone || "09 971 9067"}
                   </a>
                 </p>
                 <p className="text-muted text-sm">
                   <a
-                    href="mailto:info@insighttattoo.co.nz"
+                    href={`mailto:${content.contact_email || "info@insighttattoo.co.nz"}`}
                     className="hover:text-foreground transition-colors"
                   >
-                    info@insighttattoo.co.nz
+                    {content.contact_email || "info@insighttattoo.co.nz"}
                   </a>
                 </p>
               </div>

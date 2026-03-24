@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { getSiteContent } from "@/lib/site-data";
 
-export default function Footer() {
+export default async function Footer() {
+  const content = await getSiteContent();
+
   return (
     <footer className="bg-card-bg border-t border-border">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -21,10 +24,10 @@ export default function Footer() {
               Studio Hours
             </h4>
             <div className="text-muted text-sm space-y-2">
-              <p>Mon–Wed: 9am – 3pm</p>
-              <p>Thu–Fri: 9am – 5pm</p>
-              <p>Saturday: 9am – 3pm</p>
-              <p>Sunday: By Appointment</p>
+              <p>Mon–Wed: {content.hours_mon_wed || "9am – 3pm"}</p>
+              <p>Thu–Fri: {content.hours_thu_fri || "9am – 5pm"}</p>
+              <p>Saturday: {content.hours_saturday || "9am – 3pm"}</p>
+              <p>Sunday: {content.hours_sunday || "By Appointment"}</p>
             </div>
           </div>
 
@@ -58,26 +61,29 @@ export default function Footer() {
               Get In Touch
             </h4>
             <div className="text-muted text-sm space-y-2">
-              <p>428 Te Kamo Rd, Whangarei</p>
+              <p>
+                {content.contact_address_line1 || "428 Te Kamo Rd"},{" "}
+                {content.contact_address_line2 || "Whangarei"}
+              </p>
               <p>
                 <a
-                  href="tel:099719067"
+                  href={`tel:${(content.contact_phone || "09 971 9067").replace(/\s/g, "")}`}
                   className="hover:text-foreground transition-colors"
                 >
-                  09 971 9067
+                  {content.contact_phone || "09 971 9067"}
                 </a>
               </p>
               <p>
                 <a
-                  href="mailto:info@insighttattoo.co.nz"
+                  href={`mailto:${content.contact_email || "info@insighttattoo.co.nz"}`}
                   className="hover:text-foreground transition-colors"
                 >
-                  info@insighttattoo.co.nz
+                  {content.contact_email || "info@insighttattoo.co.nz"}
                 </a>
               </p>
               <div className="flex gap-4 mt-4">
                 <a
-                  href="https://facebook.com/insighttattoo.co.nz/"
+                  href={content.contact_facebook || "https://facebook.com/insighttattoo.co.nz/"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted hover:text-sage transition-colors"
@@ -85,7 +91,7 @@ export default function Footer() {
                   Facebook
                 </a>
                 <a
-                  href="https://instagram.com/insight_tattoo_nz"
+                  href={content.contact_instagram || "https://instagram.com/insight_tattoo_nz"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted hover:text-sage transition-colors"

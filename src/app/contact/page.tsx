@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 
 async function compressImage(file: File, maxWidth = 1600, quality = 0.8): Promise<File> {
   return new Promise((resolve, reject) => {
@@ -37,12 +38,55 @@ async function compressImage(file: File, maxWidth = 1600, quality = 0.8): Promis
   });
 }
 
+interface ContactInfo {
+  phone: string;
+  email: string;
+  facebook: string;
+  instagram: string;
+}
+
+interface ArtistInfo {
+  name: string;
+  slug: string;
+  email: string;
+}
+
 export default function ContactPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    phone: "09 971 9067",
+    email: "info@insighttattoo.co.nz",
+    facebook: "https://facebook.com/insighttattoo.co.nz/",
+    instagram: "https://instagram.com/insight_tattoo_nz",
+  });
+  const [artists, setArtists] = useState<ArtistInfo[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      const [contentRes, artistsRes] = await Promise.all([
+        supabase.from("site_content").select("key, value").in("key", [
+          "contact_phone", "contact_email", "contact_facebook", "contact_instagram",
+        ]),
+        supabase.from("artists").select("name, slug, email").order("sort_order"),
+      ]);
+      if (contentRes.data) {
+        const map: Record<string, string> = {};
+        for (const row of contentRes.data) map[row.key] = row.value;
+        setContactInfo({
+          phone: map.contact_phone || "09 971 9067",
+          email: map.contact_email || "info@insighttattoo.co.nz",
+          facebook: map.contact_facebook || "https://facebook.com/insighttattoo.co.nz/",
+          instagram: map.contact_instagram || "https://instagram.com/insight_tattoo_nz",
+        });
+      }
+      if (artistsRes.data) setArtists(artistsRes.data);
+    }
+    load();
+  }, []);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -133,10 +177,10 @@ export default function ContactPage() {
                 </h3>
                 <p className="text-muted">
                   <a
-                    href="tel:099719067"
+                    href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
                     className="hover:text-foreground transition-colors"
                   >
-                    09 971 9067
+                    {contactInfo.phone}
                   </a>
                 </p>
                 <p className="text-muted text-sm mt-1">
@@ -151,10 +195,10 @@ export default function ContactPage() {
                 </h3>
                 <p className="text-muted">
                   <a
-                    href="mailto:info@insighttattoo.co.nz"
+                    href={`mailto:${contactInfo.email}`}
                     className="hover:text-foreground transition-colors"
                   >
-                    info@insighttattoo.co.nz
+                    {contactInfo.email}
                   </a>
                 </p>
                 <p className="text-muted text-sm mt-1">
@@ -169,18 +213,12 @@ export default function ContactPage() {
                   Artist Direct
                 </h3>
                 <div className="space-y-2 text-muted text-sm">
-                  <p>
-                    <span className="text-foreground">Renee:</span>{" "}
-                    info@insighttattoo.co.nz
-                  </p>
-                  <p>
-                    <span className="text-foreground">Ash:</span>{" "}
-                    ashink.tattoos@icloud.com
-                  </p>
-                  <p>
-                    <span className="text-foreground">Fae:</span>{" "}
-                    fwolfepine@gmail.com
-                  </p>
+                  {artists.map((artist) => (
+                    <p key={artist.slug}>
+                      <span className="text-foreground">{artist.name}:</span>{" "}
+                      {artist.email}
+                    </p>
+                  ))}
                 </div>
               </div>
 
@@ -190,7 +228,7 @@ export default function ContactPage() {
                 </h3>
                 <div className="flex gap-6">
                   <a
-                    href="https://facebook.com/insighttattoo.co.nz/"
+                    href={contactInfo.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted hover:text-sage transition-colors"
@@ -198,7 +236,7 @@ export default function ContactPage() {
                     Facebook
                   </a>
                   <a
-                    href="https://instagram.com/insight_tattoo_nz"
+                    href={contactInfo.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted hover:text-sage transition-colors"
@@ -265,9 +303,11 @@ export default function ContactPage() {
                     className="w-full bg-card-bg border border-border px-4 py-3 text-muted focus:outline-none focus:border-sage transition-colors"
                   >
                     <option value="">No preference</option>
-                    <option value="renee">Renee</option>
-                    <option value="ash">Ash</option>
-                    <option value="fae">Fae</option>
+                    {artists.map((artist) => (
+                      <option key={artist.slug} value={artist.slug}>
+                        {artist.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

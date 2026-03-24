@@ -1,75 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
+import {
+  getSiteContent,
+  getSiteAssets,
+  getArtists,
+  getGalleryImages,
+  getTestimonials,
+} from "@/lib/site-data";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-export const revalidate = 60; // Revalidate every 60 seconds so CMS changes show quickly
-
-async function getSiteAssets(): Promise<Record<string, string>> {
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-  const { data } = await supabase.from("site_assets").select("key, image_url");
-  const assets: Record<string, string> = {
-    hero_image: "/images/generated/hero-v2-clean.jpeg",
-    hero_logo: "/images/logo-hero-sage.png",
-    cta_background: "/images/generated/bg-ocean-botanical.jpeg",
-  };
-  if (data) {
-    for (const row of data) {
-      assets[row.key] = row.image_url;
-    }
-  }
-  return assets;
-}
-
-const artists = [
-  {
-    name: "Renee",
-    specialty: "Watercolour, NZ Native Birds, Floral",
-    image: "/images/artist-renee.jpg",
-    href: "/artists#renee",
-  },
-  {
-    name: "Ash",
-    specialty: "Illustrative, Geometric, Hand Tattoos",
-    image: "/images/artist-ash.jpg",
-    href: "/artists#ash",
-  },
-  {
-    name: "Fae",
-    specialty: "Flash Designs, Custom, Botanical",
-    image: "/images/artist-fae.jpg",
-    href: "/artists#fae",
-  },
-];
-
-const galleryImages = [
-  { src: "/images/gallery/renee/D7C1F904-B4CD-4E36-AB49-AD3C4491027F-scaled-e1712367925322.jpeg", alt: "Watercolour Kaka by Renee" },
-  { src: "/images/gallery/ash/IMG_6716-1024x859.jpeg", alt: "Tattoo work by Ash" },
-  { src: "/images/gallery/renee/Fantail-Heart-Tattoo.jpg", alt: "Fantail Heart Tattoo by Renee" },
-  { src: "/images/gallery/ash/IMG_6717-724x1024.jpeg", alt: "Tattoo work by Ash" },
-  { src: "/images/gallery/renee/7B21628B-5323-4D27-AE55-779624B9345F.jpeg", alt: "Tui Tattoo by Renee" },
-  { src: "/images/gallery/ash/IMG_6718-518x1024.jpeg", alt: "Tattoo work by Ash" },
-];
-
-const testimonials = [
-  {
-    text: "Such a welcoming studio. Renee took the time to really understand what I wanted and the result was beyond anything I imagined. Can't wait to go back!",
-    name: "Sarah M.",
-  },
-  {
-    text: "Ash did an incredible geometric piece on my forearm. The detail is unreal. The whole experience was so relaxed and professional.",
-    name: "Jade T.",
-  },
-  {
-    text: "I was nervous getting my first tattoo but the team at Insight made me feel so comfortable. Fae's flash designs are beautiful — I ended up getting two!",
-    name: "Mia R.",
-  },
-];
+export const revalidate = 60;
 
 export default async function Home() {
-  const assets = await getSiteAssets();
+  const [content, assets, artists, galleryImages, testimonials] =
+    await Promise.all([
+      getSiteContent(),
+      getSiteAssets(),
+      getArtists(),
+      getGalleryImages(),
+      getTestimonials(),
+    ]);
+
+  // Pick 6 most recent gallery images for preview
+  const previewImages = galleryImages.slice(0, 6);
 
   return (
     <>
@@ -87,7 +39,7 @@ export default async function Home() {
         </div>
         <div className="relative z-10 text-center px-6 max-w-5xl">
           <p className="text-sage text-sm tracking-[0.3em] uppercase mb-6">
-            Est. 2016 &mdash; Whangarei, New Zealand
+            {content.hero_tagline || "Est. 2016 — Whangarei, New Zealand"}
           </p>
           <h1 className="mb-8">
             <Image
@@ -100,8 +52,8 @@ export default async function Home() {
             />
           </h1>
           <p className="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            A welcoming, female-led tattoo studio where ideas are talked through,
-            designs are carefully developed, and tattoos are created with meaning.
+            {content.hero_description ||
+              "A welcoming, female-led tattoo studio where ideas are talked through, designs are carefully developed, and tattoos are created with meaning."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -120,32 +72,40 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Studio Hours — moved up per Renee's request */}
+      {/* Studio Hours */}
       <section className="py-12 px-6 bg-card-bg border-b border-border">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
             <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
               Mon – Wed
             </h3>
-            <p className="text-foreground text-sm">9am – 3pm</p>
+            <p className="text-foreground text-sm">
+              {content.hours_mon_wed || "9am – 3pm"}
+            </p>
           </div>
           <div>
             <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
               Thu – Fri
             </h3>
-            <p className="text-foreground text-sm">9am – 5pm</p>
+            <p className="text-foreground text-sm">
+              {content.hours_thu_fri || "9am – 5pm"}
+            </p>
           </div>
           <div>
             <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
               Saturday
             </h3>
-            <p className="text-foreground text-sm">9am – 3pm</p>
+            <p className="text-foreground text-sm">
+              {content.hours_saturday || "9am – 3pm"}
+            </p>
           </div>
           <div>
             <h3 className="text-sage text-xs tracking-[0.2em] uppercase mb-2">
               Sunday
             </h3>
-            <p className="text-foreground text-sm">By Appointment</p>
+            <p className="text-foreground text-sm">
+              {content.hours_sunday || "By Appointment"}
+            </p>
           </div>
         </div>
       </section>
@@ -158,20 +118,13 @@ export default async function Home() {
               Our Studio
             </p>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-              Where Art
-              <br />
-              Meets Skin
+              {content.about_heading || "Where Art Meets Skin"}
             </h2>
             <p className="text-muted leading-relaxed mb-6">
-              Based in the heart of Kamo, Whangarei, Insight Tattoo Studio has been
-              creating meaningful tattoos since 2016. Our female-led team of artists
-              brings a warm, welcoming environment where every design is carefully
-              developed to tell your story.
+              {content.about_text_1 || ""}
             </p>
             <p className="text-muted leading-relaxed mb-8">
-              Whether you&apos;re looking for a delicate floral piece, a bold
-              statement tattoo, or a custom design that captures something truly
-              personal — our artists will work with you every step of the way.
+              {content.about_text_2 || ""}
             </p>
             <Link
               href="/pricing"
@@ -182,8 +135,8 @@ export default async function Home() {
           </div>
           <div className="relative aspect-[4/5] overflow-hidden">
             <Image
-              src="/images/renee-studio-bw.jpg"
-              alt="Renee tattooing at Insight Tattoo Studio"
+              src={assets.about_image}
+              alt="Insight Tattoo Studio"
               fill
               className="object-cover"
             />
@@ -194,7 +147,7 @@ export default async function Home() {
       {/* Fantail Divider */}
       <section className="relative w-full overflow-hidden">
         <Image
-          src="/images/generated/divider-fantail-clean.jpeg"
+          src={assets.divider_art}
           alt="Decorative divider"
           width={2000}
           height={400}
@@ -216,12 +169,12 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {artists.map((artist) => (
               <Link
-                key={artist.name}
-                href={artist.href}
+                key={artist.id}
+                href={`/artists#${artist.slug}`}
                 className="group relative aspect-[3/4] overflow-hidden"
               >
                 <Image
-                  src={artist.image}
+                  src={artist.avatar_url || "/images/placeholder.jpg"}
                   alt={artist.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -229,7 +182,9 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <h3 className="text-2xl font-bold mb-1">{artist.name}</h3>
-                  <p className="text-muted text-sm">{artist.specialty}</p>
+                  <p className="text-muted text-sm">
+                    {artist.specialties?.join(", ") || ""}
+                  </p>
                 </div>
               </Link>
             ))}
@@ -257,14 +212,14 @@ export default async function Home() {
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {galleryImages.map((img, i) => (
+            {previewImages.map((img) => (
               <div
-                key={i}
+                key={img.id}
                 className="relative aspect-[3/4] overflow-hidden group"
               >
                 <Image
-                  src={img.src}
-                  alt={img.alt}
+                  src={img.image_url}
+                  alt={img.title || "Gallery image"}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
@@ -287,11 +242,10 @@ export default async function Home() {
         </div>
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Ready to Get Inked?
+            {content.cta_heading || "Ready to Get Inked?"}
           </h2>
           <p className="text-muted text-lg mb-10 leading-relaxed">
-            Book your appointment today. We&apos;d love to hear your ideas and help
-            bring them to life.
+            {content.cta_description || ""}
           </p>
           <Link
             href="/contact"
@@ -303,33 +257,35 @@ export default async function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sage text-sm tracking-[0.3em] uppercase mb-4">
-              What Our Clients Say
-            </p>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-              Testimonials
-            </h2>
+      {testimonials.length > 0 && (
+        <section className="py-24 px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <p className="text-sage text-sm tracking-[0.3em] uppercase mb-4">
+                What Our Clients Say
+              </p>
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+                Testimonials
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="bg-card-bg border border-border p-8"
+                >
+                  <p className="text-muted text-sm leading-relaxed mb-6 italic">
+                    &ldquo;{testimonial.text}&rdquo;
+                  </p>
+                  <p className="text-sage text-sm font-medium">
+                    — {testimonial.name}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, i) => (
-              <div
-                key={i}
-                className="bg-card-bg border border-border p-8"
-              >
-                <p className="text-muted text-sm leading-relaxed mb-6 italic">
-                  &ldquo;{testimonial.text}&rdquo;
-                </p>
-                <p className="text-sage text-sm font-medium">
-                  — {testimonial.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Info Bar */}
       <section className="py-16 px-6 bg-card-bg">
@@ -338,22 +294,34 @@ export default async function Home() {
             <h3 className="text-sage text-sm tracking-[0.3em] uppercase mb-3">
               Location
             </h3>
-            <p className="text-muted text-sm">428 Te Kamo Rd</p>
-            <p className="text-muted text-sm">Kamo, Whangarei</p>
+            <p className="text-muted text-sm">
+              {content.contact_address_line1 || "428 Te Kamo Rd"}
+            </p>
+            <p className="text-muted text-sm">
+              {content.contact_address_line2 || "Kamo, Whangarei"}
+            </p>
           </div>
           <div>
             <h3 className="text-sage text-sm tracking-[0.3em] uppercase mb-3">
               Contact
             </h3>
-            <p className="text-muted text-sm">09 971 9067</p>
-            <p className="text-muted text-sm">info@insighttattoo.co.nz</p>
+            <p className="text-muted text-sm">
+              {content.contact_phone || "09 971 9067"}
+            </p>
+            <p className="text-muted text-sm">
+              {content.contact_email || "info@insighttattoo.co.nz"}
+            </p>
           </div>
           <div>
             <h3 className="text-sage text-sm tracking-[0.3em] uppercase mb-3">
               Follow Us
             </h3>
-            <p className="text-muted text-sm">Instagram: @insight_tattoo_nz</p>
-            <p className="text-muted text-sm">Facebook: /insighttattoo.co.nz</p>
+            <p className="text-muted text-sm">
+              Instagram: {content.contact_instagram_handle || "@insight_tattoo_nz"}
+            </p>
+            <p className="text-muted text-sm">
+              Facebook: {content.contact_facebook_handle || "/insighttattoo.co.nz"}
+            </p>
           </div>
         </div>
       </section>
