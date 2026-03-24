@@ -9,11 +9,11 @@ const adminLinks = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/appearance", label: "Appearance" },
   { href: "/admin/settings", label: "Site Settings" },
-  { href: "/admin/enquiries", label: "Enquiries" },
   { href: "/admin/artists", label: "Artists" },
   { href: "/admin/gallery", label: "Recent Pieces" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/testimonials", label: "Testimonials" },
+  { href: "/admin/enquiries", label: "Enquiries" },
   { href: "/admin/users", label: "Users" },
 ];
 
