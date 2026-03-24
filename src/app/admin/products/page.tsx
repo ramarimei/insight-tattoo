@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Image from "next/image";
 
 interface Product {
   id: string;
@@ -13,10 +14,39 @@ interface Product {
   sort_order: number;
 }
 
+async function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement("img");
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement("canvas");
+      let { width, height } = img;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("Canvas not supported"));
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error("Compression failed"))),
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = url;
+  });
+}
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState({ name: "", description: "", price: "", active: true });
+  const [uploadingImage, setUploadingImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -62,6 +92,41 @@ export default function ProductsPage() {
     if (confirm("Are you sure you want to delete this product?")) {
       await supabase.from("products").delete().eq("id", id);
       fetchProducts();
+    }
+  };
+
+  const handleImageUpload = async (product: Product, file: File) => {
+    setUploadingImage(product.id);
+    try {
+      let uploadData: Blob | File = file;
+      try {
+        uploadData = await compressImage(file);
+      } catch {
+        // Use original if compression fails
+      }
+
+      const fileName = `products/${product.id}-${Date.now()}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("site-assets")
+        .upload(fileName, uploadData, { contentType: "image/jpeg" });
+
+      if (uploadError) {
+        alert("Upload failed: " + uploadError.message);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("site-assets")
+        .getPublicUrl(fileName);
+
+      await supabase
+        .from("products")
+        .update({ image_url: urlData.publicUrl })
+        .eq("id", product.id);
+
+      fetchProducts();
+    } finally {
+      setUploadingImage(null);
     }
   };
 
@@ -128,31 +193,49 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-card-bg border border-border">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border text-left">
-              <th className="p-4 text-xs uppercase tracking-wider text-muted">Name</th>
-              <th className="p-4 text-xs uppercase tracking-wider text-muted">Description</th>
-              <th className="p-4 text-xs uppercase tracking-wider text-muted">Price</th>
-              <th className="p-4 text-xs uppercase tracking-wider text-muted">Status</th>
-              <th className="p-4 text-xs uppercase tracking-wider text-muted">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="border-b border-border">
-                <td className="p-4 text-sm">{product.name}</td>
-                <td className="p-4 text-sm text-muted">{product.description}</td>
-                <td className="p-4 text-sm">${product.price}</td>
-                <td className="p-4">
-                  <span className={`text-xs uppercase ${product.active ? "text-sage" : "text-muted"}`}>
-                    {product.active ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <div className="flex gap-3">
+      {/* Product Cards */}
+      <div className="space-y-4">
+        {products.map((product) => (
+          <div key={product.id} className="bg-card-bg border border-border p-6">
+            <div className="flex items-start gap-6">
+              {/* Image */}
+              <div className="shrink-0">
+                <div className="relative w-24 h-24 overflow-hidden bg-black/20 mb-2">
+                  <Image
+                    src={product.image_url || "/images/placeholder.jpg"}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <label className="block text-center px-2 py-1 text-xs text-sage hover:text-sage-dark cursor-pointer transition-colors">
+                  {uploadingImage === product.id ? "Uploading..." : "Change Image"}
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    disabled={uploadingImage === product.id}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(product, file);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
+
+              {/* Info */}
+              <div className="flex-1">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold mb-1">{product.name}</h3>
+                    <p className="text-muted text-sm mb-1">{product.description}</p>
+                    <p className="text-sage font-bold">${product.price}</p>
+                    <span className={`text-xs uppercase mt-2 inline-block ${product.active ? "text-sage" : "text-muted"}`}>
+                      {product.active ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+                  <div className="flex gap-3 shrink-0 ml-4">
                     <button onClick={() => handleEdit(product)} className="text-sage text-sm hover:text-sage-dark">
                       Edit
                     </button>
@@ -160,11 +243,14 @@ export default function ProductsPage() {
                       Delete
                     </button>
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        {products.length === 0 && (
+          <p className="text-muted text-sm">No products yet.</p>
+        )}
       </div>
     </div>
   );
