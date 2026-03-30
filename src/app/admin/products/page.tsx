@@ -95,6 +95,20 @@ export default function ProductsPage() {
     }
   };
 
+  const handleMove = async (index: number, direction: "up" | "down") => {
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= products.length) return;
+
+    const a = products[index];
+    const b = products[swapIndex];
+
+    await Promise.all([
+      supabase.from("products").update({ sort_order: b.sort_order }).eq("id", a.id),
+      supabase.from("products").update({ sort_order: a.sort_order }).eq("id", b.id),
+    ]);
+    fetchProducts();
+  };
+
   const handleImageUpload = async (product: Product, file: File) => {
     setUploadingImage(product.id);
     try {
@@ -195,9 +209,29 @@ export default function ProductsPage() {
 
       {/* Product Cards */}
       <div className="space-y-4">
-        {products.map((product) => (
+        {products.map((product, index) => (
           <div key={product.id} className="bg-card-bg border border-border p-6">
-            <div className="flex items-start gap-6">
+            <div className="flex items-start gap-4">
+              {/* Reorder buttons */}
+              <div className="flex flex-col gap-1 shrink-0 pt-2">
+                <button
+                  onClick={() => handleMove(index, "up")}
+                  disabled={index === 0}
+                  className="text-muted hover:text-foreground disabled:opacity-20 transition-colors text-lg leading-none"
+                  title="Move up"
+                >
+                  ▲
+                </button>
+                <button
+                  onClick={() => handleMove(index, "down")}
+                  disabled={index === products.length - 1}
+                  className="text-muted hover:text-foreground disabled:opacity-20 transition-colors text-lg leading-none"
+                  title="Move down"
+                >
+                  ▼
+                </button>
+              </div>
+
               {/* Image */}
               <div className="shrink-0">
                 <div className="relative w-24 h-24 overflow-hidden bg-black/20 mb-2">
