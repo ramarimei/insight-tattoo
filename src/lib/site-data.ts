@@ -1,7 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Fall back to placeholders so createClient never throws when env is absent
+// (e.g. Vercel Preview builds prerendering pages via the shared layout).
+// Queries against the placeholder simply return no data, and every getter
+// below falls back to sensible defaults, so builds don't depend on env.
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key";
 
 function getClient() {
   return createClient(supabaseUrl, supabaseAnonKey);
