@@ -1,17 +1,26 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Lazily create the admin client so importing this route never constructs it
+// at build time (Preview builds have no env vars). Memoised across requests.
+let _supabase: ReturnType<typeof createClient> | null = null;
+
+function getSupabase() {
+  if (!_supabase) {
+    _supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+  }
+  return _supabase;
+}
 
 // Verify the request is from an authenticated admin
 async function verifyAuth(request: NextRequest): Promise<boolean> {
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) return false;
   const token = authHeader.substring(7);
-  const { data } = await supabase.auth.getUser(token);
+  const { data } = await getSupabase().auth.getUser(token);
   return !!data.user;
 }
 
@@ -21,7 +30,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data, error } = await supabase.auth.admin.listUsers();
+  const { data, error } = await getSupabase().auth.admin.listUsers();
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -58,7 +67,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { data, error } = await supabase.auth.admin.createUser({
+  const { data, error } = await getSupabase().auth.admin.createUser({
     email,
     password,
     email_confirm: true,
@@ -92,7 +101,7 @@ export async function DELETE(request: NextRequest) {
   // Prevent deleting yourself
   const authHeader = request.headers.get("authorization")!;
   const token = authHeader.substring(7);
-  const { data: currentUser } = await supabase.auth.getUser(token);
+  const { data: currentUser } = await getSupabase().auth.getUser(token);
   if (currentUser.user?.id === userId) {
     return NextResponse.json(
       { error: "You cannot delete your own account" },
@@ -100,7 +109,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  const { error } = await supabase.auth.admin.deleteUser(userId);
+  const { error } = await getSupabase().auth.admin.deleteUser(userId);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -130,7 +139,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const { error } = await supabase.auth.admin.updateUserById(userId, {
+  const { error } = await getSupabase().auth.admin.updateUserById(userId, {
     password,
   });
 

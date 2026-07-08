@@ -1,4 +1,4 @@
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { NextRequest, NextResponse } from "next/server";
 
 // Cache the tax rate ID so we don't create a new one every request
@@ -6,6 +6,8 @@ let cachedTaxRateId: string | null = null;
 
 async function getGstTaxRate(): Promise<string> {
   if (cachedTaxRateId) return cachedTaxRateId;
+
+  const stripe = getStripe();
 
   // Check if we already have a GST tax rate
   const existing = await stripe.taxRates.list({ limit: 10 });
@@ -42,6 +44,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const stripe = getStripe();
     const taxRateId = await getGstTaxRate();
 
     const session = await stripe.checkout.sessions.create({
